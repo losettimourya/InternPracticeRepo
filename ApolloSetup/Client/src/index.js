@@ -69,13 +69,10 @@ function AddTodo() {
                 }
               `
             });
-            return existingTodos.concat(newTodoRef);
+            // return existingTodos.concat(newTodoRef);
+            return [...existingTodos, newTodoRef];
           },
 
-          counters(existingCounters = []) { 
-            return existingCounters;
-          }
-          
         }
       });
     }
@@ -91,7 +88,7 @@ function AddTodo() {
             return;
           }
           addTodo({
-            variables: { description: input.value, completed: false},
+            variables: { description: input.value, completed: false },
             optimisticResponse: {
               addTodo: {
                 id: 'temp-id',
@@ -149,10 +146,10 @@ const DELETE_TODO = gql`
 
 function Todos() {
   const { loading, error, data } = useQuery(GET_TODOS);
-  // const observableQuery = client.watchQuery({
-  //   query: GET_TODOS,
-  //   pollInterval: 5000,
-  // });
+  const observableQuery = client.watchQuery({
+    query: GET_TODOS,
+    pollInterval: 5000,
+  });
   const [
     updateTodo,
     { loading: mutationLoading, error: mutationError }
@@ -160,27 +157,24 @@ function Todos() {
 
   const [deleteTodo] = useMutation(DELETE_TODO);
 
-  // React.useEffect(() => {
-  //   const subscription = observableQuery.subscribe({
-  //     next({ data }) {
-  //       console.log('Data from observable query:', data);
-  //     },
-  //     error(error) {
-  //       console.error('Error from observable query:', error);
-  //     },
-  //   });
+  React.useEffect(() => {
+    const subscription = observableQuery.subscribe({
+      next({ data }) {
+        console.log('Data from observable query:', data);
+      },
+      error(error) {
+        console.error('Error from observable query:', error);
+      },
+    });
 
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [observableQuery]);
-  console.log("Data: ", data);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [observableQuery]);
   if (loading) return <p id="loading-message">Loading...</p>;
   if (error) return <p id="error-message">Error: {error.message}</p>;
-  console.log("Data: ", data);
   const todos = data.todos.map(({ id, description, completed }) => {
     let input;
-    console.log("Data: ", data);
     return (
       <li key={id} className="todo-item">
         <input
@@ -211,8 +205,6 @@ function Todos() {
 
         <button className="delete-button" onClick={e => {
           e.preventDefault();
-          console.log('Delete button clicked');
-          console.log('id:', id);
           deleteTodo({ variables: { id } });
           window.location.reload();
         }}> Delete Item</button>
@@ -263,7 +255,7 @@ const UPDATE_COUNTER = gql`
 function AddCounter() {
   let count;
   let name;
-  const [addCounter] = useMutation(ADD_COUNTER, 
+  const [addCounter] = useMutation(ADD_COUNTER,
     {
       update(
         cache,
@@ -273,9 +265,6 @@ function AddCounter() {
       ) {
         cache.modify({
           fields: {
-            todos(existingTodos = []) {
-              return existingTodos;
-            },
             counters(existingCounters = []) {
               const newCounterRef = cache.writeFragment({
                 data: addCounter,
@@ -287,7 +276,8 @@ function AddCounter() {
                   }
                 `
               });
-              return existingCounters.concat(newCounterRef);
+              // return existingCounters.concat(newCounterRef);
+              return [...existingCounters, newCounterRef];
             }
           }
         });
@@ -300,9 +290,7 @@ function AddCounter() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          console.log('Name:', name);
           addCounter({ variables: { count: 0, name: name } });
-          console.log("Done");
           count = 0;
           name = "";
         }}
@@ -343,37 +331,32 @@ function Counters() {
       subscription.unsubscribe();
     };
   }, [observableQuery]);
-  console.log("Counter Data: ", data);
+
   if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error : {error}</p>;
   // if (error) return <p>Error : {mutationError.message}</p>;
 
   const counters = data.counters.map(({ id, count, name }) => {
     let input;
-    console.log("Counters: ", data.counters);
-    console.log("id", id);
-    console.log("count", count);
-    console.log("name", name);
-
 
     return (
       <li key={id}>
         <p>{name}</p>
         <p>{count}</p>
 
-          <button onClick={(e) => {
-            e.preventDefault();
-            updateCounter({ variables: { id: id, count: count + 1, name: name } });
-          }}>Increment</button>
+        <button onClick={(e) => {
+          e.preventDefault();
+          updateCounter({ variables: { id: id, count: count + 1, name: name } });
+        }}>Increment</button>
 
-          <button onClick={(e) => {
-            e.preventDefault();
-            updateCounter({ variables: { id: id, count: count - 1, name: name } });
-          }}>Decrement</button>
+        <button onClick={(e) => {
+          e.preventDefault();
+          updateCounter({ variables: { id: id, count: count - 1, name: name } });
+        }}>Decrement</button>
 
       </li>
     );
   });
-  console.log("Final counters: ", counters)
   return (
     <div>
       <ul>
@@ -381,15 +364,15 @@ function Counters() {
       </ul>
     </div>
   );
-    
+
 }
 function App() {
   return (
     <ApolloProvider client={client}>
       <div>
-       {/* <h2>My to-do list</h2>
-         <AddTodo />
-        <Todos />  */}
+        <h2>My to-do list</h2>
+        <AddTodo />
+        <Todos />
         <h2>Counter</h2>
         <AddCounter />
         <Counters />
