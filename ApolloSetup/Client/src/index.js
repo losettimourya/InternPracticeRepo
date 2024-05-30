@@ -10,7 +10,6 @@ import {
   ObservableQuery
 } from "@apollo/client";
 import './styles.css';
-import Counter from "./counter";
 
 const serverURL = 'http://localhost:4000';
 
@@ -39,10 +38,11 @@ const client = new ApolloClient({
 
 
 const ADD_TODO = gql`
-  mutation AddTodo($description: String!) {
-    addTodo(description: $description) {
+  mutation AddTodo($description: String!, $completed: Boolean!) {
+    addTodo(description: $description, completed: $completed) {
       id
       description   
+      completed
     }
   }
 `;
@@ -65,11 +65,17 @@ function AddTodo() {
                 fragment NewTodo on Todo {
                   id
                   description
+                  completed
                 }
               `
             });
             return existingTodos.concat(newTodoRef);
+          },
+
+          counters(existingCounters = []) { 
+            return existingCounters;
           }
+          
         }
       });
     }
@@ -85,12 +91,13 @@ function AddTodo() {
             return;
           }
           addTodo({
-            variables: { description: input.value },
+            variables: { description: input.value, completed: false},
             optimisticResponse: {
               addTodo: {
                 id: 'temp-id',
                 __typename: "Todo",
                 description: input.value,
+                completed: false
               }
             }
           });
@@ -142,10 +149,10 @@ const DELETE_TODO = gql`
 
 function Todos() {
   const { loading, error, data } = useQuery(GET_TODOS);
-  const observableQuery = client.watchQuery({
-    query: GET_TODOS,
-    pollInterval: 5000,
-  });
+  // const observableQuery = client.watchQuery({
+  //   query: GET_TODOS,
+  //   pollInterval: 5000,
+  // });
   const [
     updateTodo,
     { loading: mutationLoading, error: mutationError }
@@ -153,27 +160,27 @@ function Todos() {
 
   const [deleteTodo] = useMutation(DELETE_TODO);
 
-  React.useEffect(() => {
-    const subscription = observableQuery.subscribe({
-      next({ data }) {
-        console.log('Data from observable query:', data);
-      },
-      error(error) {
-        console.error('Error from observable query:', error);
-      },
-    });
+  // React.useEffect(() => {
+  //   const subscription = observableQuery.subscribe({
+  //     next({ data }) {
+  //       console.log('Data from observable query:', data);
+  //     },
+  //     error(error) {
+  //       console.error('Error from observable query:', error);
+  //     },
+  //   });
 
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [observableQuery]);
-
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, [observableQuery]);
+  console.log("Data: ", data);
   if (loading) return <p id="loading-message">Loading...</p>;
   if (error) return <p id="error-message">Error: {error.message}</p>;
-
+  console.log("Data: ", data);
   const todos = data.todos.map(({ id, description, completed }) => {
     let input;
-
+    console.log("Data: ", data);
     return (
       <li key={id} className="todo-item">
         <input
@@ -266,6 +273,9 @@ function AddCounter() {
       ) {
         cache.modify({
           fields: {
+            todos(existingTodos = []) {
+              return existingTodos;
+            },
             counters(existingCounters = []) {
               const newCounterRef = cache.writeFragment({
                 data: addCounter,
@@ -290,16 +300,13 @@ function AddCounter() {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          addCounter({ variables: { count: count, name: name } });
+          console.log('Name:', name);
+          addCounter({ variables: { count: 0, name: name } });
+          console.log("Done");
           count = 0;
           name = "";
         }}
       >
-        <input
-          type="number"
-          value={count}
-          onChange={(e) => count = parseInt(e.target.value)}
-        />
         <input
           type="text"
           value={name}
@@ -313,35 +320,40 @@ function AddCounter() {
 
 function Counters() {
   const { loading, error, data } = useQuery(GET_COUNTERS);
-  // const observableQuery = client.watchQuery({
-  //   query: GET_COUNTERS,
-  //   pollInterval: 5000,
-  // });
+  const observableQuery = client.watchQuery({
+    query: GET_COUNTERS,
+    pollInterval: 5000,
+  });
   const [
     updateCounter,
     { loading: mutationLoading, error: mutationError }
   ] = useMutation(UPDATE_COUNTER);
 
-  // React.useEffect(() => {
-  //   const subscription = observableQuery.subscribe({
-  //     next({ data }) {
-  //       console.log('Data from observable query:', data);
-  //     },
-  //     error(error) {
-  //       console.error('Error from observable query:', error);
-  //     },
-  //   });
+  React.useEffect(() => {
+    const subscription = observableQuery.subscribe({
+      next({ data }) {
+        console.log('Data from observable query:', data);
+      },
+      error(error) {
+        console.error('Error from observable query:', error);
+      },
+    });
 
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  // }, [observableQuery]);
-
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [observableQuery]);
+  console.log("Counter Data: ", data);
   if (loading) return <p>Loading...</p>;
   // if (error) return <p>Error : {mutationError.message}</p>;
 
   const counters = data.counters.map(({ id, count, name }) => {
     let input;
+    console.log("Counters: ", data.counters);
+    console.log("id", id);
+    console.log("count", count);
+    console.log("name", name);
+
 
     return (
       <li key={id}>
@@ -361,18 +373,26 @@ function Counters() {
       </li>
     );
   });
+  console.log("Final counters: ", counters)
+  return (
+    <div>
+      <ul>
+        {counters}
+      </ul>
+    </div>
+  );
     
 }
 function App() {
   return (
     <ApolloProvider client={client}>
       <div>
-        <h2>My to-do list</h2>
-        <AddTodo />
-        <Todos />
+       {/* <h2>My to-do list</h2>
+         <AddTodo />
+        <Todos />  */}
+        <h2>Counter</h2>
         <AddCounter />
         <Counters />
-        {/* <Counter /> */}
       </div>
     </ApolloProvider>
   );

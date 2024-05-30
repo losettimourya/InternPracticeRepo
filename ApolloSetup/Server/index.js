@@ -24,7 +24,7 @@ const typeDefs = `
   }
 
 	type Mutation {
-		addTodo(description: String!): Todo
+		addTodo(description: String!, completed: Boolean!): Todo
 		updateTodo(id: String!, description: String!, completed: Boolean!): Todo
     deleteTodo (id: String!): Todo
     addCounter(count: Int!, name: String!): Counter
@@ -34,8 +34,7 @@ const typeDefs = `
 `;
 
 // LRU cache for storing to-do items
-const cache = LRU({ max: 25, maxAge: 1000 * 60 * 5 });
-
+const cache = LRU({ max: 25, maxAge: 1000 * 60 * 50 });
 // Resolver definitions
 const resolvers = {
   Query: {
@@ -67,10 +66,10 @@ const resolvers = {
     }
   },
   Mutation: {
-    addTodo: (_, { description }) => {
+    addTodo: (_, { description, completed }) => {
       const id = generate();
-      const todo = { description, id};
-      cache.set(id, {description,completed: false});
+      const todo = { description, id, completed};
+      cache.set(id, {description,completed});
       return todo;
     },
     updateTodo: (_, { description, id, completed }) => {
