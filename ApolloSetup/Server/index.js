@@ -7,6 +7,8 @@ const typeDefs = `
   type Query {
     todos: [Todo]
 		todo(id: String!): Todo
+    counter(id: String!): Counter
+    counters: [Counter]
   }
 
 	type Todo {
@@ -15,10 +17,19 @@ const typeDefs = `
     completed: Boolean!
 	}
 
+  type Counter {
+    id: String!
+    count: Int!
+    name: String!
+  }
+
 	type Mutation {
 		addTodo(description: String!): Todo
 		updateTodo(id: String!, description: String!, completed: Boolean!): Todo
     deleteTodo (id: String!): Todo
+    addCounter(count: Int!, name: String!): Counter
+    updateCounter(id: String!, count: Int!, name: String!): Counter
+    deleteCounter(id: String!): Counter
 	}
 `;
 
@@ -41,7 +52,19 @@ const resolvers = {
     // }
     todo: (_, { id }) => {
       return { id, description: cache.get(id).description, completed: cache.get(id).completed }; 
-  }
+    },
+
+    counter: (_, { id }) => {
+      return { id, count: cache.get(id).count, name: cache.get(id).name };
+    },
+
+    counters: () => {
+      const counters = [];
+      cache.forEach((value, key) => {
+        counters.push({ id: key, count: value.count, name: value.name });
+      });
+      return counters;
+    }
   },
   Mutation: {
     addTodo: (_, { description }) => {
@@ -59,7 +82,23 @@ const resolvers = {
       const todo = {id, description: cache.get(id).description, completed: cache.get(id).completed};
       cache.del(id);
       return todo;
-    }
+    },
+    addCounter: (_, { count, name }) => {
+      const id = generate();
+      const counter = { count, id, name };
+      cache.set(id, { count, name });
+      return counter;
+    },
+    updateCounter: (_, { id, count, name }) => {
+      const counter = { id, count, name };
+      cache.set(id, { count, name });
+      return counter;
+    },
+    deleteCounter: (_, { id }) => {
+      const counter = { id, count: cache.get(id).count, name: cache.get(id).name };
+      cache.del(id);
+      return counter;
+    },
   }
 };
 

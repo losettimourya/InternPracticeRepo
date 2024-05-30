@@ -10,6 +10,7 @@ import {
   ObservableQuery
 } from "@apollo/client";
 import './styles.css';
+import Counter from "./counter";
 
 const serverURL = 'http://localhost:4000';
 
@@ -30,21 +31,12 @@ cache.watch({
   },
 });
 
-// class LoggingCache extends InMemoryCache {
-//   broadcastWatches() {
-//     super.broadcastWatches();
-//     console.log('Cache data:', this.extract());
-//   }
-// }
-
-// const cache = new LoggingCache();
-
-
 const client = new ApolloClient({
   uri: serverURL,
   cache: cache,
   connectToDevTools: true
 });
+
 
 const ADD_TODO = gql`
   mutation AddTodo($description: String!) {
@@ -160,7 +152,7 @@ function Todos() {
   ] = useMutation(UPDATE_TODO);
 
   const [deleteTodo] = useMutation(DELETE_TODO);
-  
+
   React.useEffect(() => {
     const subscription = observableQuery.subscribe({
       next({ data }) {
@@ -209,15 +201,15 @@ function Todos() {
           />
           <button type="submit" className="todo-button">Update item</button>
         </form>
-        
+
         <button className="delete-button" onClick={e => {
-            e.preventDefault();
-            console.log('Delete button clicked');
-            console.log('id:', id);
-            deleteTodo({ variables: { id } });
-            window.location.reload();
-          }}> Delete Item</button>
-          
+          e.preventDefault();
+          console.log('Delete button clicked');
+          console.log('id:', id);
+          deleteTodo({ variables: { id } });
+          window.location.reload();
+        }}> Delete Item</button>
+
       </li>
     );
   });
@@ -231,6 +223,146 @@ function Todos() {
   );
 }
 
+const ADD_COUNTER = gql`
+    mutation AddCounter($count: Int!, $name: String!) {
+        addCounter(count: $count, name: $name) {
+        id
+        count
+        name
+        }
+    }
+    `;
+
+const GET_COUNTERS = gql`
+    query GetCounters {
+        counters {
+        id
+        count
+        name
+        }
+    }
+    `;
+
+const UPDATE_COUNTER = gql`
+    mutation UpdateCounter($id: String!, $count: Int!, $name: String!) {
+        updateCounter(id: $id, count: $count, name: $name) {
+        id
+        count
+        name
+        }
+    }
+    `;
+
+function AddCounter() {
+  let count;
+  let name;
+  const [addCounter] = useMutation(ADD_COUNTER, 
+    {
+      update(
+        cache,
+        {
+          data: { addCounter }
+        }
+      ) {
+        cache.modify({
+          fields: {
+            counters(existingCounters = []) {
+              const newCounterRef = cache.writeFragment({
+                data: addCounter,
+                fragment: gql`
+                  fragment NewCounter on Counter {
+                    id
+                    count
+                    name
+                  }
+                `
+              });
+              return existingCounters.concat(newCounterRef);
+            }
+          }
+        });
+      }
+    }
+  );
+
+  return (
+    <div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          addCounter({ variables: { count: count, name: name } });
+          count = 0;
+          name = "";
+        }}
+      >
+        <input
+          type="number"
+          value={count}
+          onChange={(e) => count = parseInt(e.target.value)}
+        />
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => name = e.target.value}
+        />
+        <button type="submit">Add Counter</button>
+      </form>
+    </div>
+  );
+}
+
+function Counters() {
+  const { loading, error, data } = useQuery(GET_COUNTERS);
+  // const observableQuery = client.watchQuery({
+  //   query: GET_COUNTERS,
+  //   pollInterval: 5000,
+  // });
+  const [
+    updateCounter,
+    { loading: mutationLoading, error: mutationError }
+  ] = useMutation(UPDATE_COUNTER);
+
+  // React.useEffect(() => {
+  //   const subscription = observableQuery.subscribe({
+  //     next({ data }) {
+  //       console.log('Data from observable query:', data);
+  //     },
+  //     error(error) {
+  //       console.error('Error from observable query:', error);
+  //     },
+  //   });
+
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  // }, [observableQuery]);
+
+  if (loading) return <p>Loading...</p>;
+  // if (error) return <p>Error : {mutationError.message}</p>;
+
+  const counters = data.counters.map(({ id, count, name }) => {
+    let input;
+
+    return (
+      <li key={id}>
+        <p>{name}</p>
+        <p>{count}</p>
+
+          <button onClick={(e) => {
+            e.preventDefault();
+            updateCounter({ variables: { id: id, count: count + 1, name: name } });
+          }}>Increment</button>
+
+          <button onClick={(e) => {
+            e.preventDefault();
+            updateCounter({ variables: { id: id, count: count - 1, name: name } });
+          }}>Decrement</button>
+
+      </li>
+    );
+  });
+    
+}
 function App() {
   return (
     <ApolloProvider client={client}>
@@ -238,6 +370,9 @@ function App() {
         <h2>My to-do list</h2>
         <AddTodo />
         <Todos />
+        <AddCounter />
+        <Counters />
+        {/* <Counter /> */}
       </div>
     </ApolloProvider>
   );

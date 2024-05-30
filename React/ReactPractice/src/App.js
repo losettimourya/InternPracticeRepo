@@ -6,13 +6,8 @@ function App() {
   const [count1, setCount1] = useState(-2);
   const [todos, setTodos] = useState([]);
   useEffect(() => {
-    // setInterval(() => setCount1((count1) => count1 + 1), 1000);
     setCount1((count1) => count1 + 1);
   }, [count]);
-  // useEffect(() => {
-  //   console.log('Component Mounted');
-  //   alert(count*2)
-  // }, [count]);
 
   let handler = async function (event) {
     console.log(event.target.id)
@@ -32,7 +27,7 @@ function App() {
     console.log(event.target.id);
     alert('hi')
   }
-  // useEffect((count) =>  alert(count*2), [count])
+
   function switch1() {
     return;
   }
@@ -47,20 +42,14 @@ function App() {
     setTodos([]);
   }
 
+  useEffect(() => {
+    console.log("Todos changed");
+  }, [todos])
   return (
     <div className="App" >
-      {/* <button id="button" onClick={() => handler(this)}>Learn Express</button> */}
       <button id="button" onClick={handler}>Learn Express</button>
       <br />
       <br />
-      {/* <button id="button1" onClick={() => alert('hi')}>Learn Express1</button>
-      <button id="button2" onClick={() => console.log('hi')}>Learn Express2</button>
-      <button id="button3" onClick={() => promise.then(console.log)}>Learn Express3</button>
-      <a href="https://www.google.com" onClick={(event) => { event.preventDefault(); console.log("prevent default called"); }}>Google</a>
-
-      <form id="form" onSubmit={handlerr}>
-        <button type="submit">Submit</button>
-      </form> */}
       <h1 className="todo-title">Counter</h1>
       <button className="button plusButton" onClick={() => setCount(count + 1)}>+</button>
       <button className="button minusButton" onClick={() => setCount(count - 1)}>-</button>
@@ -72,7 +61,6 @@ function App() {
         {todos && todos.length && <h1 className="todo-title">Todo List</h1>}
         <ul className="todo-list">
           {todos && todos.length && todos.map((todo, index) => {
-            // return (<li key={index} className="todo-item">{todo}</li>);
             return (
               <li key={index} className="todo-item">
                 <input type="checkbox" />
