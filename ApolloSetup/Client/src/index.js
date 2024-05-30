@@ -370,9 +370,9 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <div>
-        <h2>My to-do list</h2>
+        {/* <h2>My to-do list</h2>
         <AddTodo />
-        <Todos />
+        <Todos /> */}
         <h2>Counter</h2>
         <AddCounter />
         <Counters />
