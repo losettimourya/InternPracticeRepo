@@ -1,0 +1,17 @@
+<!-- Doesn't work properly without semicolon-->
+
+<script>
+alert('Hello World!');
+[1, 2].forEach(alert);
+
+alert(3+
+    2+
+    1
+); // Works properly without semicolon because the code doesn't assume a semicolon after incomplete expression
+
+alert('Hello World!') 
+[1, 2].forEach(alert); // Doesn't work properly without semicolon because the code doesn't assume a semicolon before square brackets
+
+</script>
+
+<!--- Also, use comments -->

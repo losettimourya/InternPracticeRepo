@@ -1,0 +1,51 @@
+<!-- Functions basics -->
+
+<script>
+    function showMessage() {
+        alert('Hello everyone!');
+    };
+    showMessage();
+    let message = 'Bye everyone!';
+    function showMessage2() {
+        // alert(message);
+        let message = 'Hello everyone!';
+        alert(message);
+    };
+    showMessage2();
+
+    function showMessage3(from, text) {
+        alert(from + ': ' + text);
+    }
+    showMessage3('Ann', 'Hello!');
+
+    function showMessage4(from, text) {
+        from = '*' + from + '*';
+        alert(from + ': ' + text);
+    }
+    let from = 'Ann';
+    showMessage4(from, 'Hello!'); // *Ann*: Hello!
+
+    alert(from); // Ann
+
+    function sum(a, b) {
+        return a + b;
+    }
+    let result = sum(1, 2);
+    alert(result);
+
+    function checkAge(age) {
+        if (age >= 18) {
+            return true;
+        } else {
+            return confirm('Do you have permission from your parents?');
+        }
+    }
+    let age = prompt('How old are you?', 18);
+    if (checkAge(age)) {
+        alert('Access granted');
+    } else {
+        alert('Access denied');
+    }
+
+
+</script>

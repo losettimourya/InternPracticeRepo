@@ -1,0 +1,11 @@
+Apollo client helps in state management. It's a bridge between UI and backend. It has a cache at UI level. It stores data in most optimal way. 
+Apollo client doesnt allow us to trace changes in the cache. 
+
+Make a watcher for this cache which tracks changes and makes snapshots for this. Check which operation is applied when cache changes from one state to another. 
+Change the in built code of Apollo client. 
+Phase 1 - check differences in both states
+Phase 2 - Check the trigger - why it happened?
+
+Apollo allows us to do calls using GraphQL
+
+In redux, we were able to detect which functions changed the state.

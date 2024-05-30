@@ -1,0 +1,70 @@
+<!-- Function Expressions -->
+
+<script>
+    // Function Declaration vs Function Expression
+    try{
+        sayHi('John'); // Hello, John
+    } catch(e) {
+        alert(e);
+    }
+    try{
+        sayHi2('John'); // Error: sayHi2 is not defined
+    } catch(e) {
+        alert(e);
+    }
+    function sayHi(name) {
+        alert(`Hello, ${name}`);
+    }
+
+    let sayHi2 = function(name) {
+        alert(`Hello2, ${name}`);
+    }
+    alert(sayHi2); // Function is a value
+
+    let age = +prompt('What is your age?', 18);
+    if(age < 18)
+    {
+        function sayHello() {
+            alert('Hello!');
+        }
+    }
+    else
+    {
+        function sayHello() {
+            alert('Greetings!');
+        }
+    }
+    try{
+        sayHello();
+    } catch(e) {
+        alert(e);
+    }
+    let sayHello2;
+    if(age < 18)
+    {
+        sayHello2 = function() {
+            alert('Hello!');
+        }
+    }
+    else
+    {
+        sayHello2 = function() {
+            alert('Greetings!');
+        }
+    }
+    try{
+        sayHello2();
+    } catch(e) {
+        alert(e);
+    }
+
+
+    // Callback functions
+    let ask = (question, yes, no) => {
+        if(confirm(question)) yes();
+        else no();
+    }
+    let sayyes = () => alert('You said yes');
+    let sayno = () => alert('You said no');
+    ask('Do you agree?', sayyes, sayno);
+</script>

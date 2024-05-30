@@ -1,0 +1,40 @@
+<!-- Basic Switch case-->
+<script>
+  let a = +prompt('a?', '');
+  switch(a) {
+    case 1:
+      alert(1);
+      break;
+    case 2:
+      alert(2);
+      break;
+    case 3:
+      alert(3);
+      break
+    case 4:
+      alert(4);
+      break;
+    default:
+      alert('I dont know such values');
+  }
+
+  const calculator = (a,b,op) => {
+    switch(op){
+      case '+':
+        return a+b;
+      case '-':
+        return a-b;
+      case '*':
+        return a*b;
+      case '/':
+        if(b == 0) return 'Not possible'
+        return a/b;
+      default:
+        return NaN;
+    }
+  }
+    a = +prompt('a?', '');
+    let b = +prompt('b?', '');
+    let op = prompt('Operation?', '');
+    alert(calculator(a,b,op));
+</script>
