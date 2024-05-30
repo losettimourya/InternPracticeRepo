@@ -1,0 +1,85 @@
+#todo-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  #loading-message,
+  #error-message,
+  #mutation-loading-message,
+  #mutation-error-message {
+    color: red;
+    font-weight: bold;
+  }
+  
+  #todo-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .todo-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .todo-checkbox {
+    margin-right: 10px;
+  }
+  
+  .todo-description {
+    flex: 1;
+    margin: 0 10px;
+  }
+  
+  .todo-form {
+    display: flex;
+    align-items: center;
+  }
+  
+  .todo-input {
+    margin-right: 10px;
+    padding: 5px;
+  }
+  
+  .todo-button {
+    padding: 5px 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .todo-button:hover {
+    background-color: #0056b3;
+  }
+  
+  #add-todo-container {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  
+  #add-todo-form {
+    display: flex;
+    align-items: center;
+  }
+  
+  #add-todo-input {
+    margin-right: 10px;
+    padding: 5px;
+    flex: 1;
+  }
+  
+  #add-todo-button {
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  #add-todo-button:hover {
+    background-color: #218838;
+  }
+  
