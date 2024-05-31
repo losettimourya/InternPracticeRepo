@@ -366,6 +366,27 @@ function Counters() {
   );
 
 }
+function CacheFunctions() {
+  const [extractedcache, setExtractedCache] = React.useState(null);
+  const extractedCache = () => {
+    const extractedCache = cache.extract();
+    console.log(extractedCache);
+    setExtractedCache(extractedCache);
+  };
+  return (
+    <div>
+    <button onClick={() => cache.restore()}>Restore Cache</button> 
+    <button onClick={() => cache.gc()}>Garbage Collect</button>
+    <button onClick={extractedCache}>Extract Cache</button>
+  <ul>
+      {extractedcache && Object.keys(extractedcache).map(key => {
+        return <li key={key}>{key} : {JSON.stringify(extractedcache[key])}</li>
+      })}
+    </ul>
+
+    </div>
+  );
+}
 function App() {
   return (
     <ApolloProvider client={client}>
@@ -376,6 +397,8 @@ function App() {
         <h2>Counter</h2>
         <AddCounter />
         <Counters />
+        <h2>Cache Functions</h2>
+        <CacheFunctions />
       </div>
     </ApolloProvider>
   );

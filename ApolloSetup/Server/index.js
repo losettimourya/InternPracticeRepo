@@ -9,6 +9,7 @@ const typeDefs = `
 		todo(id: String!): Todo
     counter(id: String!): Counter
     counters: [Counter]
+    positivecounters: [Counter]
   }
 
 	type Todo {
@@ -61,6 +62,15 @@ const resolvers = {
       const counters = [];
       cache.forEach((value, key) => {
         counters.push({ id: key, count: value.count, name: value.name });
+      });
+      return counters;
+    },
+    positivecounters: () => {
+      const counters = [];
+      cache.forEach((value, key) => {
+        if (value.count > 0) {
+          counters.push({ id: key, count: value.count, name: value.name });
+        }
       });
       return counters;
     }

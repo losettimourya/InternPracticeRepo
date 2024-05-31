@@ -47,7 +47,8 @@ Each component in React has a lifecycle which you can monitor and change it duri
 
 # useLayoutEffect vs useEffect
 
-- *useLayoutEffect*
+- *useLayoutEffect*: After DOM mutations. Before visual changes and browser painting.
+- *useEffect*: After DOM mutations, visual changes and browser painting.
 
 
 
