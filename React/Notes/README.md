@@ -45,6 +45,10 @@ Each component in React has a lifecycle which you can monitor and change it duri
 - ***Updating*** means modifying the component whenever its state or props is updated.
 - ***Unmounting*** means removing the component from DOM.
 
+# useLayoutEffect vs useEffect
+
+- *useLayoutEffect*
+
 
 
 
