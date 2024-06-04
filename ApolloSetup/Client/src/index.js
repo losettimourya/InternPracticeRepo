@@ -10,6 +10,7 @@ import {
   ObservableQuery
 } from "@apollo/client";
 import './styles.css';
+import Observable from 'zen-observable';
 
 const serverURL = 'http://localhost:4000';
 
@@ -312,6 +313,9 @@ function Counters() {
     query: GET_COUNTERS,
     pollInterval: 5000,
   });
+
+
+
   const [
     updateCounter,
     { loading: mutationLoading, error: mutationError }
@@ -387,6 +391,69 @@ function CacheFunctions() {
     </div>
   );
 }
+
+function Observables() {
+  const Color = new Observable(observer => {
+    observer.next('red');
+    observer.next('green');
+    observer.next('blue');
+  }
+  );
+
+  Color.subscribe({
+    next(color) { console.log(color); },
+    error(err) { console.error(err); },
+    complete() { console.log('done'); }
+  });
+
+  const Colprom = new Promise((res, rej) => {
+    res('red');
+    res('green');
+    res('blue');
+  }
+  );
+
+  Colprom.then(console.log);
+
+
+  var observable = new Observable(res => {
+    res.next("Hello Piyush");
+    res.next("Hello Vivek");
+    res.next("Hello Rajesh");
+});
+observable.subscribe(console.log)
+
+var promise = new Promise(res => {
+    res("Hello Piyush");
+    res("Hello Vivek");
+    res("Hello Rajesh");
+});
+promise.then(console.log)
+
+
+const observable1 = new Observable((res) => {
+  let count = 0;
+  setInterval(() => {
+      count = count + 1;
+      res.next(count);
+  }, 1000)
+})
+//subscribe the observable
+this.subscription = observable1.subscribe(ele => {
+  console.log(ele)
+})
+//unsubscribe the observable
+setTimeout(() => {
+  this.subscription?.unsubscribe();
+}, 12000)
+
+  return (
+    <div>
+      <p>Check the console for the observable values</p>
+    </div>
+  );
+
+}
 function App() {
   return (
     <ApolloProvider client={client}>
@@ -399,6 +466,8 @@ function App() {
         <Counters />
         <h2>Cache Functions</h2>
         <CacheFunctions />
+        <h2>Observables</h2>
+        <Observables />
       </div>
     </ApolloProvider>
   );
