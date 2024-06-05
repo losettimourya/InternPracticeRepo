@@ -1,5 +1,3 @@
-- causes link unsubscription if unsubscribed
-
 - updates result of previous query if the result of a new query overlaps
 
 ```mermaid
