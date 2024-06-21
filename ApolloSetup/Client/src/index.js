@@ -431,21 +431,21 @@ var promise = new Promise(res => {
 promise.then(console.log)
 
 
-const observable1 = new Observable((res) => {
-  let count = 0;
-  setInterval(() => {
-      count = count + 1;
-      res.next(count);
-  }, 1000)
-})
-//subscribe the observable
-this.subscription = observable1.subscribe(ele => {
-  console.log(ele)
-})
-//unsubscribe the observable
-setTimeout(() => {
-  this.subscription?.unsubscribe();
-}, 12000)
+// const observable1 = new Observable((res) => {
+//   let count = 0;
+//   setInterval(() => {
+//       count = count + 1;
+//       res.next(count);
+//   }, 1000)
+// })
+// //subscribe the observable
+// this.subscription = observable1.subscribe(ele => {
+//   console.log(ele)
+// })
+// //unsubscribe the observable
+// setTimeout(() => {
+//   this.subscription?.unsubscribe();
+// }, 12000)
 
   return (
     <div>
@@ -454,6 +454,50 @@ setTimeout(() => {
   );
 
 }
+
+function watchCacheChanges(client) {
+  return new Observable(observer => {
+    const handleChange = () => {
+      const newData = cache.extract();
+      observer.next(newData);
+    };
+
+    const subscription = cache.watch({
+      query: gql`
+        query WatchAll {
+          __typename
+        }
+      `,
+      callback: handleChange
+    });
+
+    return () => subscription.unsubscribe();
+  });
+}
+
+function CacheWatcher() {
+  React.useEffect(() => {
+    const cacheObservable = watchCacheChanges(client);
+
+    const subscription = cacheObservable.subscribe({
+      next(data) {
+        console.log('Cache data changed:', data);
+      },
+      error(err) {
+        console.error('Error watching cache:', err);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  return (
+    <div>
+      <p>Check the console for cache changes</p>
+    </div>
+  );
+}
+
 function App() {
   return (
     <ApolloProvider client={client}>
@@ -464,10 +508,13 @@ function App() {
         <h2>Counter</h2>
         <AddCounter />
         <Counters />
-        <h2>Cache Functions</h2>
-        <CacheFunctions />
         <h2>Observables</h2>
         <Observables />
+        <h2>Cache Functions</h2>
+        <CacheFunctions />
+        <h2>Cache Watcher</h2>
+        <CacheWatcher />
+
       </div>
     </ApolloProvider>
   );

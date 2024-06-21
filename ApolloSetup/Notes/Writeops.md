@@ -9,7 +9,7 @@ flowchart TD
     D --> E(Increment txCount)
     E --> F(Enter QueryManager.ts)
     F --> |writeToStore| G(Sending data and options to the actual function)
-    G[Start] --> H[Extract Parameters]
+    G --> H[Extract Parameters]
     H --> I[Get Operation Definition]
     I --> J[Create Field Merger]
     J --> K[Prepare Variables]
